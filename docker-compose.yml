@@ -1,21 +1,24 @@
 version: "3"
 
 services:
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
   cliapp:
     build: 
       context: ./dockerfiles
       dockerfile: Dockerfile.cliapp
-    volumes:
-      - data:/opt/chimera/data
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis      
   webapp:
     build:
       context: ./dockerfiles
       dockerfile: Dockerfile.webapp
-    volumes:
-      - data:/opt/chimera/data 
     ports:
       - 8080:80
-
-volumes:
-  data: 
-    external: true
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis
